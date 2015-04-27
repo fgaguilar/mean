@@ -1,7 +1,7 @@
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var mongoose = require('mongoose');
-var db = mongoose.connect('mongodb://localhost/test');
+var db = mongoose.connect('mongodb://fidel:Valentina2010@localhost/test');
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
@@ -48,19 +48,30 @@ app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use(multer()); // for parsing multipart/form-data
 
+
+app.use(function (req, res, next) {
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost');
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    // Pass to next layer of middleware
+    next();
+});
+
+
 passport.use(new LocalStrategy(
 function(username, password, done) 
 {
-    /*for(var u in users){
-    	if(username == users[u].username && password == users[u].passport){
-    		return done(null, users[u]); 
-    	}
-    }*/
     UserModel.findOne({username:username, password:password}, function(err, user){
-    	if (user){
-    		return done(null, user);    		
-    	}
-        return done(null, false, {message: 'Unable to login'});
+      if (user){
+        return done(null, user);
+      }
+      return done(null, false, {message: 'Unable to login'});
     });
 }));
 
@@ -84,15 +95,17 @@ app.get('/hello', auth, function(req, res){
 });
 
 app.post('/login', passport.authenticate('local'), function(req,res){
-	res.json(req.user);	
+	res.json(req.user);
 });
 
 app.post('/logout', function(req,res){
 	req.logOut();
-	res.send(200);	
+	res.send(200);
 });
 
 app.get('/loggedin', function(req,res){
+  console.log("Ingreso a loggedin");
+  console.log(req.isAuthenticated());
 	res.send(req.isAuthenticated() ? req.user : '0');	
 });
 
