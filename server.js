@@ -9,6 +9,8 @@ var multer = require('multer');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
+var conectado=false;
+
 var UserSchema = new mongoose.Schema({
 	username: String,
 	password: String,
@@ -95,18 +97,27 @@ app.get('/hello', auth, function(req, res){
 });
 
 app.post('/login', passport.authenticate('local'), function(req,res){
+	console.log("Ingreso a login");
+	console.log(req.user);
+	conectado=true;
+	console.log(conectado);
 	res.json(req.user);
 });
 
 app.post('/logout', function(req,res){
+	console.log("Ingreso a logout");
 	req.logOut();
+	conectado=false;
+	console.log(conectado);
 	res.send(200);
 });
 
 app.get('/loggedin', function(req,res){
-  console.log("Ingreso a loggedin");
-  console.log(req.isAuthenticated());
-	res.send(req.isAuthenticated() ? req.user : '0');	
+	console.log("Ingreso a loggedin");
+	console.log(req.user);
+	console.log(conectado);
+	res.send(conectado ? req.user : '0');	
+	//res.send(req.isAuthenticated() ? req.user : '0');	
 });
 
 app.post('/register', function(req,res){
