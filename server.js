@@ -101,6 +101,7 @@ app.post('/login', passport.authenticate('local'), function(req,res){
 	console.log(req.user);
 	conectado=true;
 	console.log(conectado);
+	console.log(req.isAuthenticated());
 	res.json(req.user);
 });
 
@@ -114,8 +115,6 @@ app.post('/logout', function(req,res){
 
 app.get('/loggedin', function(req,res){
 	console.log("Ingreso a loggedin");
-	console.log(req.user);
-	console.log(conectado);
 	res.send(conectado ? req.user : '0');	
 	//res.send(req.isAuthenticated() ? req.user : '0');	
 });
