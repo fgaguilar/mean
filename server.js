@@ -100,26 +100,40 @@ app.post('/login', passport.authenticate('local'), function(req,res){
 
 app.get('/loggedin', function(req,res){
   	console.log("INGRESO A LOGGEDIN");
-	console.log("username: " + usuarios[userName]);
-	UserModel.findOne({username: usuarios[userName]}, function(err,user){			
-		if (user) {
-			console.log("req.user: " + user);
-		}	
-		res.send(user.username ? user : '0');
-	});
+  	if (typeof(usuarios[userName])!="undefined"){
+		console.log("username: " + usuarios[userName]);
+		UserModel.findOne({username: usuarios[userName]}, function(err,user){			
+			if (user) {
+				console.log("user: " + user);
+				res.send(user.username ? user : '0');
+			}	
+		});
+	}
+	else {
+		res.send('0');
+	}
 });
 
 app.post('/logout', function(req,res){
 	console.log("INGRESO A LOGOUT");
-	console.log(req.body.username);
+	if (typeof(req.body.username)!="undefined"){
+		console.log(req.body.username);
 
-  	req.session.destroy(function(err){
-    	if(err){
-      	console.log(err);
-    	}
-  	});  
-	req.logOut();
-	res.sendStatus(200);
+	  	req.session.destroy(function(err){
+	    	if(err){
+	      	console.log(err);
+	    	}
+	  	});  
+		req.logOut();
+
+		console.log("200");
+		res.sendStatus(200);
+	}
+	else {
+		console.log("400");
+		req.logOut();
+		res.sendStatus(400);	
+	}
 });
 
 app.post('/register', function(req,res){
