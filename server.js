@@ -8,8 +8,8 @@ var bodyParser = require('body-parser');
 var multer = require('multer'); 
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
-
-var sess;
+var usuarios = {};
+var userName = '';
 
 var UserSchema = new mongoose.Schema({
 	username: String,
@@ -91,30 +91,35 @@ app.get('/hello', auth, function(req, res){
 });
 
 app.post('/login', passport.authenticate('local'), function(req,res){
-	console.log("Ingreso a login");
-  sess=req.session;
-  sess.username=req.body.username;
-  console.log("sess.username " + sess.username);
+	console.log("INGRESO A LOGIN");
+	userName = req.body.username;
+	usuarios[userName] = req.body.username;
+	console.log("username: " + usuarios[userName]);
 	res.json(req.user);
 });
 
-app.post('/logout', function(req,res){
-	console.log("Ingreso a logout");
-  req.session.destroy(function(err){
-    if(err){
-      console.log(err);
-    }
-  });  
-	req.logOut();
-	res.sendStatus(200);
+app.get('/loggedin', function(req,res){
+  	console.log("INGRESO A LOGGEDIN");
+	console.log("username: " + usuarios[userName]);
+	UserModel.findOne({username: usuarios[userName]}, function(err,user){			
+		if (user) {
+			console.log("req.user: " + user);
+		}	
+		res.send(user.username ? user : '0');
+	});
 });
 
-app.get('/loggedin', function(req,res){
-	console.log("Ingreso a loggedin");
-  console.log("sess.username " + sess.username);
-  console.log(req.user);
-	res.send(sess.username ? req.user : '0');	
-	//res.send(req.isAuthenticated() ? req.user : '0');	
+app.post('/logout', function(req,res){
+	console.log("INGRESO A LOGOUT");
+	console.log(req.body.username);
+
+  	req.session.destroy(function(err){
+    	if(err){
+      	console.log(err);
+    	}
+  	});  
+	req.logOut();
+	res.sendStatus(200);
 });
 
 app.post('/register', function(req,res){
