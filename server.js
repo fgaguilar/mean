@@ -11,14 +11,16 @@ var LocalStrategy = require('passport-local').Strategy;
 var usuarios = {};
 var userName = '';
 
-var UserSchema = new mongoose.Schema({
-	username: String,
-	password: String,
-	email: String,
-	firstName: String,
-	lastName: String,
-	roles: [String]
-});
+var UserSchema = new mongoose.Schema(
+	{
+		username: String,
+		password: String,
+		email: String,
+		firstName: String,
+		lastName: String,
+		roles: [String]
+	}
+);
 var UserModel = mongoose.model("UserModel", UserSchema);
 // var admin = new UserModel(
 // 	{
@@ -52,7 +54,7 @@ app.use(multer()); // for parsing multipart/form-data
 
 
 app.use(function (req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', 'http://mscwsus.minera.local');
+    res.setHeader('Access-Control-Allow-Origin', 'http://mscwsus.minera.local:8081');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
     res.setHeader('Access-Control-Allow-Credentials', true);
@@ -63,9 +65,14 @@ app.use(function (req, res, next) {
 passport.use(new LocalStrategy(
 function(username, password, done) 
 {
+	console.log("Ingreso a password");
     UserModel.findOne({username:username, password:password}, function(err, user){
       if (user){
+      	console.log("Por SI");
         return done(null, user);
+      }
+      else {
+      	console.log("Por NO");
       }
       return done(null, false, {message: 'Unable to login'});
     });
@@ -144,7 +151,7 @@ app.post('/register', function(req,res){
 		}	
 		else {
 			var newUser = new UserModel(req.body);
-			newUser.roles = ['student'];
+			//newUser.roles = ['student','admin'];
 			newUser.save(function(err,user){
 				req.login(user, function(err){
 					if(err){ return next(err); }

@@ -1,10 +1,11 @@
 <h1>profile</h1>
 
 <div ng-show="currentUser.roles.indexOf('admin') > -1">
-	<h2>Admin</h2>
+	<h2>Usuario</h2>
 	<table class="table table-striped">
 		<tr ng-repeat="user in users">
 			<td>{{user.username}}</td>
+			<td>{{user.roles}}</td>
 		</tr>
 	</table>
 </div>
