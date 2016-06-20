@@ -11,8 +11,10 @@ app.controller('LoginCtrl', ['$scope','$http', '$rootScope','$location', functio
 }]);
 
 app.controller('NavCtrl', ['$scope', '$http','$location','$rootScope', function ($scope,$http,$location,$rootScope) {
+	console.log("Ingreso a NavCtrl");
 	$scope.logout = function(){
-		$http.post('/logout')
+		console.log("LOGOUT");
+		$http.get('/logout')
 		.success(function(){
 			$rootScope.currentUser = null;
 			$location.url('/home');
